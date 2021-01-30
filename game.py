@@ -264,6 +264,10 @@ class Player(pygame.sprite.Sprite): # персонаж
 
 
 def game(screen, FPS, width, height, pers): # сама игра
+    first_right1 = False
+    first_left1 = False
+    first_right2 = False
+    first_left2 = False
     clock = pygame.time.Clock()
     all_sprites = pygame.sprite.Group()
     border_sprites = pygame.sprite.Group()
@@ -287,12 +291,16 @@ def game(screen, FPS, width, height, pers): # сама игра
             if event.type == pygame.KEYDOWN:
                 if event.key == pygame.K_a:
                     player1.set_speedx(-3)
+                    first_left1 = True
                 elif event.key == pygame.K_d:
                     player1.set_speedx(3)
+                    first_right1 = True
                 elif event.key == pygame.K_LEFT:
                     player2.set_speedx(-3)
+                    first_left2 = True
                 elif event.key == pygame.K_RIGHT:
                     player2.set_speedx(3)
+                    first_right2 = True
                 elif event.key == pygame.K_j:
                     player1.set_speedy(-23)
                 elif event.key == pygame.K_KP2:
@@ -306,13 +314,13 @@ def game(screen, FPS, width, height, pers): # сама игра
                 elif event.key == pygame.K_KP3:
                     player2.hit_leg()
             if event.type == pygame.KEYUP:
-                if event.key == pygame.K_a:
+                if event.key == pygame.K_a and first_left1:
                     player1.set_speedx(3)
-                elif event.key == pygame.K_d:
+                elif event.key == pygame.K_d and first_right1:
                     player1.set_speedx(-3)
-                elif event.key == pygame.K_LEFT:
+                elif event.key == pygame.K_LEFT and first_left2:
                     player2.set_speedx(3)
-                elif event.key == pygame.K_RIGHT:
+                elif event.key == pygame.K_RIGHT and first_right2:
                     player2.set_speedx(-3)
         border_sprites.draw(screen)
         screen.blit(fon, (0, 0))
@@ -325,7 +333,7 @@ def game(screen, FPS, width, height, pers): # сама игра
             break
     if player2.hit:
         player2.rect.x += 50
-    while True: # в цикле все персонажи перестают двигаться, бить и т.д.
+    while True: #  цмкле все персонажи перестают двигаться, бить и т.д.
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
                 terminate()
@@ -335,11 +343,13 @@ def game(screen, FPS, width, height, pers): # сама игра
         if pygame.sprite.collide_mask(player1, borders[1]) and (player1.dx != 0 or
                                                                 player1.hit != 0):
             player1.hit = 0
-            player1.set_speedx(-player1.dx)
+            player1.dx = 0
+            player1.set_speedx(0)
         if pygame.sprite.collide_mask(player2, borders[1]) and (player2.dx != 0 or
                                                                 player2.hit != 0):
             player2.hit = 0
-            player2.set_speedx(-player2.dx)
+            player2.dx = 0
+            player2.set_speedx(0)
         all_sprites.update()
         all_sprites.draw(screen)
         clock.tick(FPS)
@@ -353,7 +363,7 @@ def game(screen, FPS, width, height, pers): # сама игра
         player2.set_die()
     k = 0
     go = load_image('game-over.png')
-    while True: # цикл с запуском смерти одного из персонажей и появлением надписи "Game over"
+    while True: # цикл с запуском смерти одного из игроков и появлением надписи "Game over"
         k -= 1
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
